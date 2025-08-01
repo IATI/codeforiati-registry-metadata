@@ -7,3 +7,8 @@ defaults:
 
 title: Registry metadata
 description: All the IATI registry metadata, in two files.
+
+keep_files:
+ - publisher_list.json
+ - registry_id_relationships.csv
+ - dataset_list.json
