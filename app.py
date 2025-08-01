@@ -1,6 +1,7 @@
 import csv
 import json
 from os.path import join
+import sys
 import time
 
 import requests
@@ -39,7 +40,7 @@ def fetch(path, *args, **kwargs):
     return r.json()["result"]
 
 
-def fetch_publishers():
+def fetch_publishers(out_dir):
     ids = fetch("organization_list")
 
     output = {
@@ -56,20 +57,20 @@ def fetch_publishers():
             })
         output["result"].append(data)
 
-    with open(join("out", "publisher_list.json"), "w") as fp:
+    with open(join(out_dir, "publisher_list.json"), "w") as fp:
         json.dump(output, fp)
 
     return output["result"]
 
 
-def generate_mappings(publishers):
+def generate_mappings(publishers, out_dir):
     mappings = {
         x["name"]: list(set([y["old_name"] for y in x["historical_publisher_names"]]))
         for x in publishers
         if x["historical_publisher_names"]
     }
 
-    with open(join("out", "registry_id_relationships.csv"), "w") as fh:
+    with open(join(out_dir, "registry_id_relationships.csv"), "w") as fh:
         writer = csv.DictWriter(fh, fieldnames=["current_registry_id", "previous_registry_id"])
         writer.writeheader()
         for current_name, old_names in mappings.items():
@@ -79,7 +80,7 @@ def generate_mappings(publishers):
                     "previous_registry_id": old_name,
                 })
 
-def fetch_datasets():
+def fetch_datasets(out_dir):
     page = 1
     page_size = 1000
     output = {
@@ -97,10 +98,11 @@ def fetch_datasets():
         output["result"] += data
         page += 1
 
-    with open(join("out", "dataset_list.json"), "w") as fp:
+    with open(join(out_dir, "dataset_list.json"), "w") as fp:
         json.dump(output, fp)
 
-
-publishers = fetch_publishers()
-generate_mappings(publishers)
-fetch_datasets()
+if __name__ == "__main__":
+    out_dir = sys.argv[1]
+    publishers = fetch_publishers(out_dir)
+    generate_mappings(publishers, out_dir)
+    fetch_datasets(out_dir)
