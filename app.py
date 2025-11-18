@@ -53,7 +53,6 @@ def fetch_publishers(out_dir):
             "organization_show",
             params={
                 "id": id_,
-                "show_historical_publisher_names": "true",
             })
         output["result"].append(data)
 
@@ -62,23 +61,6 @@ def fetch_publishers(out_dir):
 
     return output["result"]
 
-
-def generate_mappings(publishers, out_dir):
-    mappings = {
-        x["name"]: list(set([y["old_name"] for y in x["historical_publisher_names"]]))
-        for x in publishers
-        if x["historical_publisher_names"]
-    }
-
-    with open(join(out_dir, "registry_id_relationships.csv"), "w") as fh:
-        writer = csv.DictWriter(fh, fieldnames=["current_registry_id", "previous_registry_id"])
-        writer.writeheader()
-        for current_name, old_names in mappings.items():
-            for old_name in old_names:
-                _ = writer.writerow({
-                    "current_registry_id": current_name,
-                    "previous_registry_id": old_name,
-                })
 
 def fetch_datasets(out_dir):
     page = 1
@@ -104,5 +86,4 @@ def fetch_datasets(out_dir):
 if __name__ == "__main__":
     out_dir = sys.argv[1]
     publishers = fetch_publishers(out_dir)
-    generate_mappings(publishers, out_dir)
     fetch_datasets(out_dir)

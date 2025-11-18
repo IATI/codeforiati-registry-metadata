@@ -1,5 +1,4 @@
 /out/*.json
-/out/*.csv
 /out/_site
 
 # Byte-compiled / optimized / DLL files
