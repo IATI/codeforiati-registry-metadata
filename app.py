@@ -7,7 +7,7 @@ import time
 import requests
 
 
-API_BASE_URL = "https://iatiregistry.org/api/action/"
+API_BASE_URL = "https://dashboard.iatistandard.org/api/limited-ckan-compatible/"
 REQUEST_HEADERS = {
     "User-Agent": "CodeForIATI Registry Metadata https://registry.codeforiati.org"
 }
